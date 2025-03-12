@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Practice</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+            color: #444;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        textarea {
+            height: 120px;
+            resize: none;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #28a745;
+        }
+
+        .btn-secondary:hover {
+            background: #218838;
+        }
+
+        .box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 15px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-box {
+            background: #e3f2fd;
+        }
+
+        .feedback-box {
+            background: #d4edda;
+        }
+
+        .answer-box {
+            background: #f8d7da;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🔹 Interview Practice Dashboard</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="domain">Domain:</label>
+        <select id="domain" name="domain" onchange="updateJobDescription()">
+            <option value="" data-description="">Select a domain</option>
+            <option value="Software Engineer" data-description="Develop and maintain software applications.">Software Engineer</option>
+            <option value="Frontend Developer" data-description="Build interactive user interfaces using HTML, CSS, and JavaScript frameworks.">Frontend Developer</option>
+            <option value="Backend Developer" data-description="Develop server-side logic, databases, and APIs for web applications.">Backend Developer</option>
+            <option value="Full-Stack Developer" data-description="Work on both frontend and backend of web applications.">Full-Stack Developer</option>
+            <option value="Data Scientist" data-description="Analyze large datasets, build predictive models, and extract insights.">Data Scientist</option>
+            <option value="AI/ML Engineer" data-description="Develop machine learning models and AI solutions.">AI/ML Engineer</option>
+            <option value="DevOps Engineer" data-description="Automate software development and deployment using CI/CD pipelines.">DevOps Engineer</option>
+            <option value="Cybersecurity Analyst" data-description="Ensure the security of systems and protect data from cyber threats.">Cybersecurity Analyst</option>
+            <option value="Cloud Engineer" data-description="Design, implement, and manage cloud computing solutions.">Cloud Engineer</option>
+            <option value="Database Administrator" data-description="Manage and optimize databases to ensure data integrity and security.">Database Administrator</option>
+            <option value="UI/UX Designer" data-description="Design intuitive and engaging user interfaces and experiences.">UI/UX Designer</option>
+            <option value="Network Engineer" data-description="Design, implement, and manage network infrastructure.">Network Engineer</option>
+            <option value="Embedded Systems Engineer" data-description="Develop software and firmware for embedded systems.">Embedded Systems Engineer</option>
+        </select>
+        
+        <label for="job_description">Job Description:</label>
+        <textarea id="job_description" name="job_description" readonly></textarea>
+
+        <button type="submit" class="btn" name="generate_question">Generate Question</button>
+        <button type="submit" class="btn btn-secondary" name="try_another_question">Try Another Question</button>
+    </form>
+
+    {% if question %}
+        <div class="box question-box">
+            <h3>💡 Interview Question:</h3>
+            <p>{{ question }}</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="practice_id" value="{{ practice_id }}">
+            
+            <label for="user_answer">Your Answer:</label>
+            <textarea name="user_answer" required>{{ answer_form.user_answer.value|default_if_none:"" }}</textarea>
+            
+            <button type="submit" class="btn" name="submit_answer">Submit Answer</button>
+        </form>
+
+        {% if feedback %}
+            <div class="box feedback-box">
+                <h3>✅ Feedback:</h3>
+                <p>{{ feedback }}</p>
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="practice_id" value="{{ practice_id }}">
+            <button type="submit" class="btn btn-secondary" name="try_more">Try More</button>
+        </form>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="practice_id" value="{{ practice_id }}">
+            <button type="submit" class="btn" name="get_suggested_answer">Get Suggested Answer</button>
+        </form>
+
+        {% if suggested_answer %}
+            <div class="box answer-box">
+                <h3>📌 Suggested Answer:</h3>
+                <p>{{ suggested_answer }}</p>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+
+<script>
+    function updateJobDescription() {
+        var domainSelect = document.getElementById("domain");
+        var jobDescription = domainSelect.options[domainSelect.selectedIndex].getAttribute("data-description");
+        document.getElementById("job_description").value = jobDescription;
+    }
+</script>
+
+</body>
+</html>
